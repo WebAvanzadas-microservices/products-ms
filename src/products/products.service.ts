@@ -14,6 +14,7 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 import { Product } from './entities/product.entity';
 import { validate as isUUID } from 'uuid';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class ProductsService {
@@ -24,14 +25,17 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto): Promise<Product> {
     try {
       const product = this.productRepository.create(createProductDto);
       await this.productRepository.save(product);
+      console.log('Product saved:', product); // Agrega un log aquí
 
       return product;
     } catch (error) {
-      this.handleDBExceptions(error);
+      // this.handleDBExceptions(error);
+      console.error('Error creating product:', error);
+      throw error;
     }
   }
 
@@ -60,7 +64,7 @@ export class ProductsService {
         .getOne();
     }
 
-    if (!product) throw new NotFoundException(`Product with ${term} not found`);
+    if (!product) throw new RpcException(`Product with ${term} not found`);
 
     return product;
   }
@@ -71,14 +75,13 @@ export class ProductsService {
       ...updateProductDto,
     });
 
-    if (!product)
-      throw new NotFoundException(`Product with id: ${id} not found`);
+    if (!product) throw new RpcException(`Product with id: ${id} not found`);
 
     try {
       await this.productRepository.save(product);
       return product;
     } catch (error) {
-      this.handleDBExceptions(error);
+      // this.handleDBExceptions(error);
     }
   }
 
@@ -87,13 +90,13 @@ export class ProductsService {
     await this.productRepository.remove(product);
   }
 
-  private handleDBExceptions(error: any) {
-    if (error.code === '23505') throw new BadRequestException(error.detail);
+  //   private handleDBExceptions(error: any) {
+  //     if (error.code === '23505') throw new BadRequestException(error.detail);
 
-    this.logger.error(error);
-    // console.log(error)
-    throw new InternalServerErrorException(
-      'Unexpected error, check server logs',
-    );
-  }
+  //     this.logger.error(error);
+  //     // console.log(error)
+  //     throw new InternalServerErrorException(
+  //       'Unexpected error, check server logs',
+  //     );
+  //   }
 }

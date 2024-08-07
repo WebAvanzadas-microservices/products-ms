@@ -67,23 +67,23 @@ export class Product {
   // )
   // user: User
 
-  // @BeforeInsert()
-  // checkSlugInsert() {
-  //   if (!this.slug) {
-  //     this.slug = this.title;
-  //   }
+  @BeforeInsert()
+  checkSlugInsert() {
+    if (!this.slug) {
+      this.slug = this.title;
+    }
 
-  //   this.slug = this.slug
-  //     .toLowerCase()
-  //     .replaceAll(' ', '_')
-  //     .replaceAll("'", '');
-  // }
+    this.slug = this.slug
+      .toLowerCase()
+      .replaceAll(' ', '_')
+      .replaceAll("'", '');
+  }
 
-  // @BeforeUpdate()
-  // checkSlugUpdate() {
-  //   this.slug = this.slug
-  //     .toLowerCase()
-  //     .replaceAll(' ', '_')
-  //     .replaceAll("'", '');
-  // }
+  @BeforeUpdate()
+  checkSlugUpdate() {
+    this.slug = this.slug
+      .toLowerCase()
+      .replaceAll(' ', '_')
+      .replaceAll("'", '');
+  }
 }
