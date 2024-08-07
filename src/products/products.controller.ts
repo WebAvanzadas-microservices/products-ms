@@ -17,20 +17,12 @@ import { Product } from './entities/product.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 
-@ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   // @Post()
   @MessagePattern({ cmd: 'create_product' })
-  @ApiResponse({
-    status: 201,
-    description: 'Product was created',
-    type: Product,
-  })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  @ApiResponse({ status: 403, description: 'Forbideden. Token related.' })
   create(@Payload() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
